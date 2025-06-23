@@ -7,20 +7,28 @@
 ### 支援平台架構
 
 - QEMU_virt 虛擬平台
-  - ARM + Linux Kernel(no)
+  - ARM + Linux Kernel(Done)
   - ARM + FreeRTOS (no)
   - RISC-V + Linux Kernel (no)
-  - RISC-V + FreeRTOS（目前已完成）
+  - RISC-V + FreeRTOS（Done）
   
 ### 已完成功能
 
 1. Docker-based 多平台控管與工具鏈整合
 2. DTS / OpenSBI 整合與硬體啟動流程驗證
-3. FreeRTOS RTOS 核心功能實作（目前以 RISC-V 為主）
+3. FreeRTOS RTOS 核心功能實作
+   - OpenSBI 整合與硬體啟動流程驗證
    - 任務建立與優先權排程
    - 任務同步與中斷整合（Queue / Semaphore / Task Notification）
    - 記憶體與堆疊使用狀態監控
+   - 客製化Uart設定
    - RISC-V 架構下自定中斷處理（trap handler / mtvec / CLINT）(on-going)
+4. Linux Kernel 架構實作與驗證（於 QEMU ARM 平台）
+   - 串接 HAL（Device Tree）、Kernel 驅動模組與 User-space 工具，建構完整 Linux 系統運作架構 
+   - 開發自訂 Kernel Module，並支援與使用者工具互動
+  
+  
+  
 
 
 ## 2. 開發環境與開源資源
@@ -65,27 +73,15 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 
 ## 建立環境Linux kernel 編譯環境
-### <p>安裝常用套件</p>
+### <p>安裝硬體模擬平台</p>
 <pre><code>brew install git make wget ncurses qemu
 </code></pre>
 
-### <p>安裝TooLChains</p>
-三方 Homebrew Tap（軟體來源），由 messense 維護，專門提供交叉編譯工具鏈，例如 aarch64-unknown-linux-gnu-gcc。
-<pre><code>  brew tap messense/macos-cross-toolchains
+### <p>安裝Docker</p>
+官方下載：https://www.docker.com/  
+Docker相較於傳統VM省去OS，有減少容量和快速啟動等優勢很適合跨平台開發。
+![alt text](image.png)
+### <p>創立Docker的container</p>
+<pre><code>  docker build -t linux-arm64-builder .
+  docker run -it --rm -v $(pwd):/Project linux-arm64-builder /bin/bash
 </code></pre>
-### <p>交叉編譯工具鏈</p> 
-這會安裝 交叉編譯工具鏈，主要包含：
-+ aarch64-unknown-linux-gnu-gcc：針對 ARM64 架構 的 GCC 編譯器。
-+ aarch64-unknown-linux-gnu-ld、objdump、strip、as 等其他工具：針對 Linux 上 ARM64 架構的執行檔進行處理。
-  
-
-### <p>安裝GUN</p>
-
-<pre><code>  brew install aarch64-unknown-linux-gnu
-</code></pre>
-
-### <p>確認GUN</p>
-<pre><code>  aarch64-unknown-linux-gnu-gcc --version
-</code></pre>
-
-/Users/yucheng/Documents
